@@ -1,0 +1,241 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Praveen R - Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+
+        header {
+            background: linear-gradient(to right, #2c3e50, #3498db);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1.2rem;
+        }
+
+        nav {
+            background: #2c3e50;
+            padding: 1rem;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            color: #3498db;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+
+        .contact-info p, .skills ul, .projects ul, .languages ul {
+            margin-bottom: 0.5rem;
+        }
+
+        .skills ul, .languages ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .skills li, .languages li {
+            background: #3498db;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background: #2c3e50;
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Praveen R</h1>
+        <p>Web Developer | B.Sc. Computer Science (AI)</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#about">About</a></li>
+            <li><a href="#education">Education</a></li>
+            <li><a href="#skills">Skills</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div id="about" class="section">
+            <h2>Career Objective</h2>
+            <p>I aspire to be a successful web developer, continually enhancing my skills and collaborating with top tech firms to create innovative digital solutions.</p>
+        </div>
+
+        <div id="education" class="section">
+            <h2>Education</h2>
+            <p>Currently pursuing B.Sc. Computer Science with Artificial Intelligence at SRM Arts and Science College, Kanchipuram, Tamilnadu.</p>
+        </div>
+
+        <div id="skills" class="section">
+            <h2>Skills</h2>
+            <ul>
+                <li>Python</li>
+                <li>Java</li>
+                <li>HTML</li>
+                <li>Web Development</li>
+                <li>Excel</li>
+                <li>MS Word</li>
+            </ul>
+        </div>
+
+        <div id="projects" class="section">
+            <h2>Projects</h2>
+            <ul>
+                <li>Currently developing a dynamic and responsive website using HTML, CSS, and Python.</li>
+            </ul>
+        </div>
+
+        <div id="languages" class="section">
+            <h2>Languages</h2>
+            <ul>
+                <li>Tamil (Native)</li>
+                <li>English (Fluent)</li>
+            </ul>
+        </div>
+
+        <div id="contact" class="section">
+            <h2>Contact Information</h2>
+            <p>📞 Phone: 9361501418</p>
+            <p>📧 Email: praveenr@srmasc.ac.in</p>
+            <p>📍 Location: Kanchipuram, Tamilnadu</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Praveen R. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                targetElement.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
